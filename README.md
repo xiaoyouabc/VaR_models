@@ -1,3 +1,7 @@
+# 文件夹VaR里面是模型 Mian.py是用数据集测试的script
+
+
+
 # calculate_functions
 
 ## 定义了收益率的计算及参数法、等权重滑动窗口法、指数加权移动平均法、历史模拟法和GARCH模型计算Var和CVar
