@@ -6,7 +6,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-def Dataloader(path='temp/VARData.xlsx', output_dir=None):
+def Dataloader(path='test/VARData.xlsx', output_dir=None):
     """
         载入原始数据并简单处理
     :param path, str: 原始数据的路径
