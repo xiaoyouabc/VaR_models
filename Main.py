@@ -1,5 +1,10 @@
+import os.path
+
 from VaR.VaR_models import VaR, VaR_Evaluate
-from test.Data_loader import Dataloader
+from VaR.VaR_ploting import plot_four_VaRs_returns, plot_multiple_ged_distributions
+import sys
+sys.path.append(r'D:\HuaweiMoveData\Users\xiaoyou\Desktop\其他资料\大三上\金融风险管理\VaRProject\test')
+from Data_loader import Dataloader
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -46,14 +51,33 @@ def get_twelve_VaRs(Returns, if_plot=False, VaR_type='var', output_prefix='VaR_'
 
 if __name__ == '__main__':
 
+    # betas_list = [0.5, 1, 1.5, 2, 3]  # 多个 beta 值
+    # plot_multiple_ged_distributions(betas_list, sample_size=1000, xlim=(-10, 10), output_dir='output/GED_distribution.png')
+    #
+    if not os.path.exists('output/pictures_four_VaRs'):
+        os.makedirs('output/pictures_four_VaRs')
     Returns = Dataloader()
+    results_95, results_99 = get_twelve_VaRs(Returns, if_plot=False, VaR_type='var')
+    resultsc_95, resultsc_99 = get_twelve_VaRs(Returns, if_plot=False, VaR_type='cvar')
+    keys_95_vars = list(results_95.keys())
+    keys_99_vars = list(results_99.keys())
+    keys_95_cvars = list(resultsc_95.keys())
+    keys_99_cvars = list(resultsc_99.keys())
+    for i in range(len(keys_95_vars)):
+        plot_four_VaRs_returns(Returns, results_95[keys_95_vars[i]], results_99[keys_99_vars[i]], resultsc_95[keys_95_cvars[i]],
+                               resultsc_99[keys_99_cvars[i]], title=f'{keys_95_vars[i].split("_")[0]}_{keys_95_vars[i].split("_")[1]}',
+                               output_dir=f'output/pictures_four_VaRs/{keys_95_vars[i].split("_")[0]}_{keys_95_vars[i].split("_")[1]}.png')
+
+    # plot_four_VaRs_returns(results_95, resultsc_95, resultsc_99)
+
     results_95, results_99 = get_twelve_VaRs(Returns, VaR_type='var', output_prefix='output/pictures/VaR_')
     resultsc_95, resultsc_99 = get_twelve_VaRs(Returns, VaR_type='cvar', output_prefix='output/pictures/CVaR_')
     VaR_evaluate = VaR_Evaluate(Returns)
     df1 = VaR_evaluate.evaluate(results_95, confidence_level=0.95)
     df2 = VaR_evaluate.evaluate(results_99, confidence_level=0.99)
-    # df1.to_excel("95.xlsx", index=True, engine='openpyxl')
-    # df2.to_excel("99.xlsx", index=True, engine='openpyxl')
+    #
+    # df1.to_excel("output/95.xlsx", index=True, engine='openpyxl')
+    # df2.to_excel("output/99.xlsx", index=True, engine='openpyxl')
     #
     # cvarresults_95, cvarresults_99 = get_twelve_VaRs(Returns, VaR_type='cvar')
     # df1 = VaR_evaluate.evaluate(cvarresults_95, confidence_level=0.95)
@@ -84,7 +108,7 @@ if __name__ == '__main__':
     # df2 = VaR_evaluate.evaluate(gedcvarresults_99, confidence_level=0.99)
     # df1.to_excel("gedcvar95.xlsx", index=True, engine='openpyxl')
     # df2.to_excel("gedcvar99.xlsx", index=True, engine='openpyxl')
-
+    """
     garch_types = ['garch', 'egarch', 'cgarch']
     var_types = ['var', 'cvar']
     distributions = ['normal', 't', 'ged']
@@ -106,3 +130,4 @@ if __name__ == '__main__':
     df2 = VaR_evaluate.evaluate(results_99, confidence_level=0.99)
     df1.to_excel("output/garch_distribution_vartype95.xlsx", index=True, engine='openpyxl')
     df2.to_excel("output/garch_distribution_vartype99.xlsx", index=True, engine='openpyxl')
+    """

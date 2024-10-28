@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import os
+from scipy.stats import gennorm
 import matplotlib.pyplot as plt
 import warnings
 warnings.filterwarnings('ignore')
@@ -104,6 +105,85 @@ def plot_Vars_9599_returns(Returns, VaR_95, VaR_99, title, xlabel='Time', ylabel
     plt.grid(True)
     if output_dir:
         plt.savefig(output_dir, dpi=400)
+    plt.show()
+
+
+
+def plot_four_VaRs_returns(Returns, VaR_95, VaR_99, CVaR_95, CVaR_99,
+                           title, xlabel='Time', ylabel='Returns/VaR/CVaR',
+                           output_dir=None):
+    """
+    绘制返回序列与 95% 和 99% VaR / CVaR 的对比图。
+    参数：
+    Returns: 序列 - 返回序列
+    VaR_95: 序列 - 95% VaR 序列
+    VaR_99: 序列 - 99% VaR 序列
+    CVaR_95: 序列 - 95% CVaR 序列
+    CVaR_99: 序列 - 99% CVaR 序列
+    title: str - 图表标题
+    xlabel: str - X 轴标签
+    ylabel: str - Y 轴标签
+    output_dir: str - 如果提供，则将图表保存到指定路径
+    """
+    plt.figure(figsize=(20, 7))
+    # 绘制返回序列
+    plt.plot(Returns, color='pink', label='Return Series')
+    # 绘制 VaR 线
+    plt.plot(VaR_95, color='red', linestyle='--', label='95% VaR')
+    plt.plot(VaR_99, color='blue', linestyle='--', label='99% VaR')
+    # 绘制 CVaR 线
+    plt.plot(CVaR_95, color='orange', linestyle='-', label='95% CVaR')
+    plt.plot(CVaR_99, color='purple', linestyle='-', label='99% CVaR')
+    # 设置标题和标签
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    # 显示图例和网格
+    plt.legend(loc='best')
+    plt.grid(True)
+    # 如果指定了输出路径，则保存图片
+    if output_dir:
+        plt.savefig(output_dir, dpi=400)
+
+    # 显示图表
+    plt.show()
+
+
+def plot_multiple_ged_distributions(betas, sample_size=1000, xlim=(-5, 5), output_dir=None):
+    """
+    绘制多个 beta 值的 GED 分布在一张图上。
+
+    参数：
+    betas: list - 多个 beta 形状参数的列表。
+    sample_size: int - 每个分布的样本数量，默认1000。
+    xlim: tuple - X 轴的范围，默认为 (-5, 5)。
+    output_dir: str - 如果提供路径，将图保存为文件。
+    """
+    plt.figure(figsize=(12, 8))
+
+    # 遍历 beta 列表，逐个绘制 PDF 曲线
+    for beta in betas:
+        # 生成数据并计算 PDF
+        data = gennorm.rvs(beta, size=sample_size)
+        x = np.linspace(*xlim, 1000)  # 限制 X 轴范围
+        pdf = gennorm.pdf(x, beta)
+
+        # 绘制 PDF 曲线
+        plt.plot(x, pdf, lw=2, label=f'beta = {beta}')
+
+    # 设置标题和标签
+    plt.title('GED Distributions with Different Beta Values', fontsize=16)
+    plt.xlabel('Value', fontsize=12)
+    plt.ylabel('Density', fontsize=12)
+    plt.legend(loc='best')
+    plt.grid(True)
+    plt.xlim(xlim)  # 设置 X 轴范围
+
+    # 保存图像（如果提供路径）
+    if output_dir:
+        plt.savefig(output_dir, dpi=300)
+
+    # 显示图表
     plt.show()
 
 

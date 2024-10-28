@@ -7,6 +7,7 @@ warnings.filterwarnings('ignore')
 
 # 假设Rts是收益率的数组
 
+
 def calculate_MAE(VaRs):
     VaRs = VaRs.dropna()
     # 第一步：计算每日12种方法的平均VaR值
@@ -66,8 +67,7 @@ def calculate_and_visualize_coverage(Returns, VaR, if_plot):
     min_length = min(len(losses), len(VaR))
     totallen = len(losses)
     losses = losses[totallen - min_length:]
-    print(len(losses))
-    coverage = ( -VaR<=losses )
+    coverage = (-VaR <= losses)
     # 计算所涵盖结果的比例
     coverage_ratio = np.mean(coverage)
 
