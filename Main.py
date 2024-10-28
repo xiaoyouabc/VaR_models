@@ -1,7 +1,7 @@
 import os.path
 
 from VaR.VaR_models import VaR, VaR_Evaluate
-from VaR.VaR_ploting import plot_four_VaRs_returns, plot_multiple_ged_distributions
+from VaR.VaR_ploting import plot_four_VaRs_returns, plot_multiple_ged_distributions, plot_3x3_subplots_from_dfs
 import sys
 sys.path.append(r'D:\HuaweiMoveData\Users\xiaoyou\Desktop\其他资料\大三上\金融风险管理\VaRProject\test')
 from Data_loader import Dataloader
@@ -57,16 +57,15 @@ if __name__ == '__main__':
     if not os.path.exists('output/pictures_four_VaRs'):
         os.makedirs('output/pictures_four_VaRs')
     Returns = Dataloader()
-    results_95, results_99 = get_twelve_VaRs(Returns, if_plot=False, VaR_type='var')
-    resultsc_95, resultsc_99 = get_twelve_VaRs(Returns, if_plot=False, VaR_type='cvar')
-    keys_95_vars = list(results_95.keys())
-    keys_99_vars = list(results_99.keys())
-    keys_95_cvars = list(resultsc_95.keys())
-    keys_99_cvars = list(resultsc_99.keys())
-    for i in range(len(keys_95_vars)):
-        plot_four_VaRs_returns(Returns, results_95[keys_95_vars[i]], results_99[keys_99_vars[i]], resultsc_95[keys_95_cvars[i]],
-                               resultsc_99[keys_99_cvars[i]], title=f'{keys_95_vars[i].split("_")[0]}_{keys_95_vars[i].split("_")[1]}',
-                               output_dir=f'output/pictures_four_VaRs/{keys_95_vars[i].split("_")[0]}_{keys_95_vars[i].split("_")[1]}.png')
+
+    # keys_95_vars = list(results_95.keys())
+    # keys_99_vars = list(results_99.keys())
+    # keys_95_cvars = list(resultsc_95.keys())
+    # keys_99_cvars = list(resultsc_99.keys())
+    # for i in range(len(keys_95_vars)):
+    #     plot_four_VaRs_returns(Returns, results_95[keys_95_vars[i]], results_99[keys_99_vars[i]], resultsc_95[keys_95_cvars[i]],
+    #                            resultsc_99[keys_99_cvars[i]], title=f'{keys_95_vars[i].split("_")[0]}_{keys_95_vars[i].split("_")[1]}',
+    #                            output_dir=f'output/pictures_four_VaRs/{keys_95_vars[i].split("_")[0]}_{keys_95_vars[i].split("_")[1]}.png')
 
     # plot_four_VaRs_returns(results_95, resultsc_95, resultsc_99)
 
@@ -74,7 +73,11 @@ if __name__ == '__main__':
     resultsc_95, resultsc_99 = get_twelve_VaRs(Returns, VaR_type='cvar', output_prefix='output/pictures/CVaR_')
     VaR_evaluate = VaR_Evaluate(Returns)
     df1 = VaR_evaluate.evaluate(results_95, confidence_level=0.95)
+    indexs = df1.index.to_series().apply(lambda x: '_'.join(x.split('_')[:2]))
+    df1.index = indexs
     df2 = VaR_evaluate.evaluate(results_99, confidence_level=0.99)
+    df2.index = indexs
+    plot_3x3_subplots_from_dfs(df1, df2, output_dir='output/s1.png')
     #
     # df1.to_excel("output/95.xlsx", index=True, engine='openpyxl')
     # df2.to_excel("output/99.xlsx", index=True, engine='openpyxl')

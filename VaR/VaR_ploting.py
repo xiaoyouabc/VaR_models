@@ -187,6 +187,58 @@ def plot_multiple_ged_distributions(betas, sample_size=1000, xlim=(-5, 5), outpu
     plt.show()
 
 
+def plot_3x3_subplots_from_dfs(df1, df2, output_dir=None, rotation=45):
+    """
+    绘制 3x3 子图，每个子图展示两个 DataFrame 中对应列的数据。
+
+    参数：
+    df1: DataFrame - 第一个 DataFrame，包含至少 9 列。
+    df2: DataFrame - 第二个 DataFrame，包含至少 9 列。
+    output_dir: str - 如果提供路径，将图保存为文件。
+    rotation: int - X 轴和 Y 轴标签的旋转角度，默认 45 度。
+    """
+    if df1.shape[1] < 9 or df2.shape[1] < 9:
+        raise ValueError("Both DataFrames must contain at least 9 columns.")
+
+    fig, axes = plt.subplots(3, 3, figsize=(15, 15))  # 创建 3x3 子图网格
+    fig.suptitle('Comparison of VaRs and CVaRs', fontsize=20)  # 整体标题
+
+    # 遍历 3x3 子图，将每对列数据绘制在子图上
+    for i in range(9):
+        ax = axes[i // 3, i % 3]  # 获取当前子图的轴对象
+
+        # 选择第 i 列的数据
+        data1 = df1.iloc[:, i]
+        data2 = df2.iloc[:, i]
+
+        # 绘制两条曲线
+        ax.plot(data1, label=f'{df1.columns[i]} (VaR)', color='blue', linestyle='--')
+        ax.plot(data2, label=f'{df2.columns[i]} (CVaR)', color='green', linestyle='-')
+
+        # 设置标题和美化子图
+        ax.set_title(f'{df1.columns[i]} vs {df2.columns[i]}', fontsize=14)
+        ax.set_xlabel('Index', fontsize=12)
+        ax.set_ylabel('Value', fontsize=12)
+        ax.legend(loc='best')
+        ax.grid(alpha=0.3)
+
+        # 设置 X 轴和 Y 轴标签的旋转角度
+        for tick in ax.get_xticklabels():
+            tick.set_rotation(rotation)
+        for tick in ax.get_yticklabels():
+            tick.set_rotation(rotation)
+
+    # 调整子图之间的间距
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+
+    # 保存图像（如果提供路径）
+    if output_dir:
+        plt.savefig(output_dir, dpi=300)
+
+    # 显示图表
+    plt.show()
+
+
 def calculate_and_visualize_correlation(Returns, VaR):
 
     # 计算收益率序列的绝对值
@@ -241,3 +293,5 @@ def plot_boxplot(data, title, xlabel, ylabel, output_dir=None):
         print(f"图表已保存到: {output_path}")
     # 否则直接显示图片
     plt.show()
+
+
